@@ -1,0 +1,11 @@
+{
+  "name": "xllax",
+  "version": "1.0.1",
+  "description": "Parallax that's smooth as shit",
+  "main": "index.js",
+  "scripts": {
+
+  },
+  "author": "nathandallaire",
+  "license": "ISC"
+}

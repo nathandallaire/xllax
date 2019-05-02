@@ -11,7 +11,8 @@ npm i -S xllax
 import Xllax from "xllax";
 ```
 
-## Initialize it (pass in ID of element you want to have the parallax)
+## Initialize it 
+(pass in ID of element you want to have the parallax)
 ```
 const parallax = new Xllax('parallaxElement');
 ```

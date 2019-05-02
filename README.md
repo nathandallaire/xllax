@@ -1,22 +1,22 @@
 # Xllax
 ###### Parallax that's smooth as literal shit
 
-To get started:
+## To get started:
 ```
 npm i -S xllax
 ```
 
-Importing
+## Importing
 ```
 import Xllax from "xllax";
 ```
 
-Initialize it (pass in ID of element you want to have the parallax)
+## Initialize it (pass in ID of element you want to have the parallax)
 ```
 const parallax = new Xllax('parallaxElement');
 ```
 
-Attributes
+## Attributes
 ```
 <div  
     id="parallaxElement" 

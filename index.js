@@ -1,54 +1,52 @@
 
 module.exports = class Xllax {
-	constructor(id) {
+	constructor(id, options) {
 		const that = this;
-		this.offsetTop = 0;
+		this.scrollTop = 0;
 		this.screen = {width: 0, height: 0};
 		this.lastYPosition = 0;
-		this.lerpLevel = 0.05;
+		this.id = id;
+
+		//Options
+		this.lerpLevel = options.drag ? options.drag : 0.05;
+		this.laxDistance = options.distance ? options.distance : 0;
+		this.center = options.center ? options.center : true;
+		this.horizontal = options.horizontal ? options.horizontal : false;
 		this.id = id;
 
 		//Bindings
+		if (!options.distance) return console.error('A distance must be supplied for Xllax')
 		this.bindings(id);
 	}
 
 	render(el) {
-		const that = this;
-		const hasLaxDistance = el.hasAttribute('data-lax-distance');
-		const isCenter = el.hasAttribute('data-lax-center');
+		const that = this,
+			  isCenter = this.center,
+			  laxDistance = this.laxDistance,
+			  screenHeight = this.screen.height,
+			  scrollTop = this.scrollTop,
+			  isHorizontal = this.horizontal,
+			  elHeight = el.getBoundingClientRect().height;
 
-		let laxDistance;
-		if (hasLaxDistance) {
-			laxDistance = Number(el.dataset.laxDistance);
-		}
-
-		// The screen height 0.5 and laxDistance * 0.5 thing
-		// Is to ensure that the el stays in the middle
-		// of the screen
-		let differenceFromTopOfView = (this.offsetTop + this.screen.height) - el.offsetTop;
+		let differenceFromTopOfView = (scrollTop + screenHeight) - el.offsetTop;
 		if (isCenter) {
-			differenceFromTopOfView = (this.offsetTop + (this.screen.height * 0.5) + (laxDistance * 0.5)) - el.offsetTop;
+			//Ensure by the time the el is in the center of the screen
+			//It's at translate(0, 0)
+			differenceFromTopOfView = el.offsetTop - (scrollTop + ((screenHeight * 0.5) - elHeight));
 		}
 
 		//This attribute auto-calculates the speed
 		//If you know the distance you want to cover
 		//While the screen scrolls over it
-		let speed = 0;
-		if (hasLaxDistance) {
-			const elHeight = el.getBoundingClientRect().height;
-			const windowHeight = this.screen.height;
-			speed = laxDistance / (elHeight + windowHeight + laxDistance);
-		}
+		const speed = laxDistance / (elHeight + screenHeight + laxDistance);
 
-		let whereShouldBe = differenceFromTopOfView * speed;
+		const whereShouldBe = differenceFromTopOfView * speed;
 		this.lastYPosition = lerp(this.lastYPosition, whereShouldBe, this.lerpLevel);
 
-
 		let transform = `translateY(${this.lastYPosition}px)`;
-		if (el.hasAttribute("data-lax-horizontal")) {
+		if (isHorizontal) {
 			transform = `translateX(${this.lastYPosition}px)`;
 		}
-		
 
 		el.style.transform = transform;
 		el.style.webkitTransform = transform;
@@ -63,9 +61,9 @@ module.exports = class Xllax {
 		const that = this;
 
 		//On scroll
-		this.offsetTop = getTopOffset();
+		this.scrollTop = getTopOffset();
 		window.addEventListener('scroll', (e) => {
-			that.offsetTop = getTopOffset();
+			that.scrollTop = getTopOffset();
 		});
 
 		//On resize
@@ -91,12 +89,4 @@ function getTopOffset () {
 
 const lerp = (a, b, n) => (1 - n) * a + n * b;
 
-function isElementInViewport(el) {
-    var rect = el.getBoundingClientRect();
-
-    return rect.bottom > 0 &&
-        rect.right > 0 &&
-        rect.left < (window.innerWidth || document.documentElement.clientWidth) &&
-        rect.top < (window.innerHeight || document.documentElement.clientHeight)
-}
 
